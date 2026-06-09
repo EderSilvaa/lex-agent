@@ -1,0 +1,4 @@
+# Build artifacts generated from branding/<BRAND>.json by scripts/gen-branding.cjs.
+# These are derived — never edit by hand, never commit.
+src/branding.generated.ts
+electron/branding.generated.cjs

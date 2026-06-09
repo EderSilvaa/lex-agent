@@ -295,7 +295,17 @@ const BOOT_FAKE_STEP_MS = (() => {
   if (!Number.isFinite(raw) || raw <= 0) return 650
   return Math.max(120, raw)
 })()
-const APP_NAME = 'Hermes'
+// Brand values are generated at build/dev time from branding/<BRAND>.json by
+// scripts/gen-branding.cjs. Fallback keeps the app runnable if generation was
+// skipped (e.g. a raw `electron .` without the dev/build scripts).
+const BRAND = (() => {
+  try {
+    return require('./branding.generated.cjs')
+  } catch {
+    return { productName: 'Lex', companyName: 'Lex', appId: 'com.lex.app', urls: {} }
+  }
+})()
+const APP_NAME = BRAND.productName
 const TITLEBAR_HEIGHT = 34
 const MACOS_TRAFFIC_LIGHTS_HEIGHT = 14
 const WINDOW_BUTTON_POSITION = {
@@ -457,7 +467,7 @@ app.setName(APP_NAME)
 app.setAboutPanelOptions({
   applicationName: APP_NAME,
   applicationVersion: resolveHermesVersion(),
-  copyright: 'Copyright © 2026 Nous Research'
+  copyright: `Copyright © ${new Date().getFullYear()} ${BRAND.companyName}`
 })
 
 // Custom scheme for streaming local media (video/audio) into the renderer.
@@ -3602,7 +3612,7 @@ function openOauthLoginWindow(baseUrl) {
       win = new BrowserWindow({
         width: 520,
         height: 720,
-        title: 'Sign in to Hermes gateway',
+        title: `Sign in to ${APP_NAME} gateway`,
         autoHideMenuBar: true,
         webPreferences: {
           contextIsolation: true,
@@ -4684,7 +4694,7 @@ function createWindow() {
     height: 800,
     minWidth: 400,
     minHeight: 620,
-    title: 'Hermes',
+    title: APP_NAME,
     // Frameless title bar on every platform so the renderer can paint the
     // "hide sidebar" button (and other left-side titlebar tools) flush with
     // the top edge — matching the macOS layout where the traffic lights sit
@@ -5148,7 +5158,7 @@ ipcMain.handle('hermes:api', async (_event, request) => {
 ipcMain.handle('hermes:notify', (_event, payload) => {
   if (!Notification.isSupported()) return false
   new Notification({
-    title: payload?.title || 'Hermes',
+    title: payload?.title || APP_NAME,
     body: payload?.body || '',
     silent: Boolean(payload?.silent)
   }).show()
@@ -5604,7 +5614,7 @@ function showAboutPanelFresh() {
   app.setAboutPanelOptions({
     applicationName: APP_NAME,
     applicationVersion: resolveHermesVersion(),
-    copyright: 'Copyright © 2026 Nous Research'
+    copyright: `Copyright © ${new Date().getFullYear()} ${BRAND.companyName}`
   })
   app.showAboutPanel()
 }

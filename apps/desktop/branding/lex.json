@@ -1,0 +1,25 @@
+{
+  "id": "lex",
+  "productName": "Lex",
+  "companyName": "Lex",
+  "appId": "com.lex.app",
+  "executableName": "Lex",
+  "tagline": "Seu assistente jurídico inteligente.",
+  "urls": {
+    "website": "https://CHANGEME.example.com",
+    "support": "https://CHANGEME.example.com/suporte",
+    "releases": "https://CHANGEME.example.com/releases",
+    "bootstrapRepoRaw": "https://raw.githubusercontent.com/CHANGEME/lex-brain",
+    "portal": "https://CHANGEME.example.com/portal"
+  },
+  "theme": {
+    "accent": "#1f6feb",
+    "accentDark": "#388bfd"
+  },
+  "assets": {
+    "iconIco": "assets/icon.ico",
+    "iconIcns": "assets/icon.icns",
+    "iconPng": "assets/icon.png",
+    "logo": "nous-girl.jpg"
+  }
+}

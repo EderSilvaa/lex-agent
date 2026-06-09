@@ -40,6 +40,17 @@ const path = require('node:path')
 const https = require('node:https')
 const { spawn } = require('node:child_process')
 
+// Brand-configured raw repo base for the agent ("brain") install scripts.
+// Generated from branding/<BRAND>.json; fallback keeps bootstrap working if
+// generation was skipped.
+const BRAND = (() => {
+  try {
+    return require('./branding.generated.cjs')
+  } catch {
+    return { urls: { bootstrapRepoRaw: 'https://raw.githubusercontent.com/CHANGEME/lex-brain' } }
+  }
+})()
+
 const STAMP_COMMIT_RE = /^[0-9a-f]{7,40}$/i
 
 // Stages flagged needs_user_input=true in the manifest are skipped by the
@@ -100,7 +111,7 @@ function downloadInstallScript(commit, destPath) {
   // is immutable (unlike a branch ref), so we don't need integrity
   // verification beyond "did the file we wrote pass a syntax probe."
   const scriptName = installScriptName()
-  const url = `https://raw.githubusercontent.com/NousResearch/hermes-agent/${commit}/scripts/${scriptName}`
+  const url = `${BRAND.urls.bootstrapRepoRaw}/${commit}/scripts/${scriptName}`
   return new Promise((resolve, reject) => {
     fs.mkdirSync(path.dirname(destPath), { recursive: true })
     const tmpPath = destPath + '.tmp'

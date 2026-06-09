@@ -2,10 +2,24 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { createRequire } from 'module'
+
+// White-label: pull the active brand (BRAND env, default "lex") so the static
+// index.html <title> matches the product name in dev and in the build.
+const brand = createRequire(import.meta.url)('./branding/brand.cjs').resolveBrand()
+
+function brandHtmlTitle() {
+  return {
+    name: 'brand-html-title',
+    transformIndexHtml(html: string) {
+      return html.replace(/<title>[\s\S]*?<\/title>/, `<title>${brand.productName}</title>`)
+    }
+  }
+}
 
 export default defineConfig({
   base: './',
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), brandHtmlTitle()],
   css: {
     // Pin an explicit (empty) PostCSS config. Tailwind is handled entirely by
     // `@tailwindcss/vite`, so the renderer needs no PostCSS plugins — and

@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useState } from 'react'
 
+import { BRAND } from '@/branding'
 import { BrandMark } from '@/components/brand-mark'
 import { Button } from '@/components/ui/button'
 import { type Translations, useI18n } from '@/i18n'
@@ -19,7 +20,7 @@ import {
 import { ListRow, SectionHeading, SettingsContent } from './primitives'
 import { UninstallSection } from './uninstall-section'
 
-const RELEASE_NOTES_URL = 'https://github.com/NousResearch/hermes-agent/releases'
+const RELEASE_NOTES_URL = BRAND.urls.releases
 
 function relativeTime(ms: number | undefined, a: Translations['settings']['about']) {
   if (!ms) {

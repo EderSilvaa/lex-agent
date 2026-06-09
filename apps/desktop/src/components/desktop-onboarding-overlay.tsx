@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { BRAND } from '@/branding'
 import { ModelPickerDialog } from '@/components/model-picker'
 import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
@@ -93,7 +94,7 @@ const API_KEY_OPTIONS: ApiKeyOption[] = [
     id: 'local',
     name: 'Local / custom endpoint',
     envKey: 'OPENAI_BASE_URL',
-    docsUrl: 'https://github.com/NousResearch/hermes-agent#bring-your-own-endpoint',
+    docsUrl: BRAND.urls.website,
     placeholder: 'http://127.0.0.1:8000/v1'
   }
 ]

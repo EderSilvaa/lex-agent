@@ -46,8 +46,19 @@ async function stampExeIdentity(exe, desktopRoot = path.resolve(__dirname, '..')
     throw new Error(`target exe not found: ${exe}`)
   }
 
-  // Icon lives at apps/desktop/assets/icon.ico
-  const icon = path.join(desktopRoot, 'assets', 'icon.ico')
+  // Brand identity (productName / companyName / icon) comes from the active
+  // brand (BRAND env, default "lex"). Fallback keeps stamping working even if
+  // brand resolution fails for some reason.
+  let brand
+  try {
+    brand = require('../branding/brand.cjs').resolveBrand()
+  } catch {
+    brand = { productName: 'Lex', companyName: 'Lex', assets: { iconIco: 'assets/icon.ico' } }
+  }
+  const year = new Date().getFullYear()
+
+  // Brand icon (apps/desktop/<brand.assets.iconIco>, default assets/icon.ico)
+  const icon = path.join(desktopRoot, brand.assets.iconIco)
   if (!fs.existsSync(icon)) {
     throw new Error(`icon not found: ${icon}`)
   }
@@ -68,14 +79,14 @@ async function stampExeIdentity(exe, desktopRoot = path.resolve(__dirname, '..')
   await rcedit(exe, {
     icon,
     'version-string': {
-      ProductName: 'Hermes',
-      FileDescription: 'Hermes',
-      CompanyName: 'Nous Research',
-      LegalCopyright: 'Copyright (c) 2026 Nous Research'
+      ProductName: brand.productName,
+      FileDescription: brand.productName,
+      CompanyName: brand.companyName,
+      LegalCopyright: `Copyright (c) ${year} ${brand.companyName}`
     }
   })
 
-  console.log('[set-exe-identity] done — Hermes icon + identity stamped')
+  console.log(`[set-exe-identity] done — ${brand.productName} icon + identity stamped`)
 }
 
 module.exports = { stampExeIdentity }
