@@ -12,6 +12,8 @@
   3. `_wait_agent` 30s→120s (`tui_gateway/server.py`) — 1ª mensagem lazy-instala SDKs (anthropic, edge-tts).
   4. **Retry na conexão WS inicial** (4× com 3s, `apps/desktop/src/app/gateway/hooks/use-gateway-boot.ts`) — backend frio pode estourar o connectTimeout de 15s na 1ª tentativa.
   5. `model.default` precisa estar setado no `config.yaml` do HERMES_HOME (vazio → API 404 "Not found"); usar ex. `"claude-opus-4-8"`.
+  6. **Para provider anthropic, `base_url` deve ficar COMENTADO** no `config.yaml` — o SDK nativo já usa `https://api.anthropic.com` e acrescenta `/v1` sozinho. Com `base_url: .../v1` a URL final vira `/v1/v1/messages` → **HTTP 404 "Not found" em toda chamada** (auth passa, request_id válido — só o path errado).
+- **STATUS 2026-06-10: ciclo completo FUNCIONANDO** — app abre, gateway conecta (com retry), agente responde via Anthropic no chat. ✅
 - Diagnóstico isolado do WS: `node ws-test.mjs` (na raiz) contra um backend com `HERMES_DASHBOARD_SESSION_TOKEN` conhecido.
 
 ---
