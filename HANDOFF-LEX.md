@@ -3,11 +3,16 @@
 > Estado do trabalho de white-label + por que o app trava no boot e como resolver.
 > Leia isto primeiro ao retomar (você ou outra IA). Data: 2026-06-09.
 
-## TL;DR
+## TL;DR (atualizado 2026-06-10)
 - Fork do monorepo `NousResearch/hermes-agent` rebrandeado para **Lex** (white-label build-por-cliente).
-- **Compila e roda**: o app abre, a UI aparece **brandada "Lex"** (título da janela, telas, i18n). ✅
-- **Bloqueio atual:** o app trava no boot em ~90–94%. **Causa raiz descoberta:** o backend (`hermes dashboard`) **builda o web UI no startup (~2min)**, mas o desktop só espera **45s** (`waitForHermes`) → timeout → retry → spawn de vários backends → corrida de portas (`ECONNREFUSED 127.0.0.1:9120`).
-- **Workaround que FUNCIONA:** subir o backend manualmente (deixar buildar/esquentar até `/api/status`=200) e abrir o desktop em **modo remoto** apontando pra ele.
+- **O app ABRIU completo** (chat UI) em 2026-06-10 após a cadeia de fixes abaixo. ✅
+- **Fixes de resiliência aplicados no código** (todos commitados):
+  1. `waitForHermes` 45s→300s (`apps/desktop/electron/main.cjs`) — 1º start builda web UI ~2min.
+  2. **Deps do venv pinadas** — starlette/uvicorn/websockets novos quebram o WS (ver §setup).
+  3. `_wait_agent` 30s→120s (`tui_gateway/server.py`) — 1ª mensagem lazy-instala SDKs (anthropic, edge-tts).
+  4. **Retry na conexão WS inicial** (4× com 3s, `apps/desktop/src/app/gateway/hooks/use-gateway-boot.ts`) — backend frio pode estourar o connectTimeout de 15s na 1ª tentativa.
+  5. `model.default` precisa estar setado no `config.yaml` do HERMES_HOME (vazio → API 404 "Not found"); usar ex. `"claude-opus-4-8"`.
+- Diagnóstico isolado do WS: `node ws-test.mjs` (na raiz) contra um backend com `HERMES_DASHBOARD_SESSION_TOKEN` conhecido.
 
 ---
 
@@ -72,7 +77,11 @@ Arquivos editados (rebrand): `package.json` (name/productName/scripts), `electro
    ```bash
    uv venv venv --python 3.11
    uv pip install --python venv/Scripts/python.exe -e .
-   uv pip install --python venv/Scripts/python.exe python-multipart   # dep que faltava
+   # ⚠️ CRÍTICO: repinar a pilha web nas versões do uv.lock. O resolve fresco
+   # pega starlette/uvicorn/websockets mais novos que QUEBRAM o WebSocket do
+   # gateway (aceita o upgrade mas o frame gateway.ready falha →
+   # "Could not connect to Hermes gateway" / ws closed reason=ready_send_failed):
+   uv pip install --python venv/Scripts/python.exe "fastapi==0.133.1" "starlette==1.0.1" "uvicorn==0.41.0" "websockets==15.0.1" python-multipart
    ```
 4. **Desktop (Node):** `npm install` na RAIZ (monorepo workspaces).
 5. **Electron binário (gotcha!):** a extração do binário às vezes deixa `node_modules/electron/dist` incompleto e `node_modules/electron/path.txt` vazio → erro "Electron failed to install correctly". Corrigir:

@@ -3016,7 +3016,11 @@ function closePreviewWatchers() {
 }
 
 async function waitForHermes(baseUrl, token) {
-  const deadline = Date.now() + 45_000
+  // First launch builds the web UI (tsc + vite, ~2min) before the API answers,
+  // which blew past the old 45s deadline and triggered a retry/spawn storm.
+  // 5min gives the one-time web build room to finish; later starts hit the
+  // cached web_dist and are fast.
+  const deadline = Date.now() + 300_000
   let lastError = null
 
   while (Date.now() < deadline) {

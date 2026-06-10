@@ -326,8 +326,26 @@ export function useGatewayBoot({
         // conn.wsUrl is stale; resolveGatewayWsUrl() re-mints it and, on
         // failure, throws a reauth error rather than connecting with a dead
         // ticket (which would surface as an opaque "connection closed").
-        const wsUrl = await resolveGatewayWsUrl(desktop, conn)
-        await gateway.connect(wsUrl)
+        //
+        // The initial connect retries: on a cold backend (first boot, slow
+        // machine) the very first WS upgrade can outlive connectTimeoutMs while
+        // the server event loop is still settling, which used to fail the whole
+        // boot with "Could not connect to Hermes gateway" even though a retry
+        // one second later connects instantly. Re-mint the URL each attempt
+        // (OAuth tickets are single-use).
+        const CONNECT_ATTEMPTS = 4
+        for (let attempt = 1; attempt <= CONNECT_ATTEMPTS; attempt++) {
+          const wsUrl = await resolveGatewayWsUrl(desktop, conn)
+          try {
+            await gateway.connect(wsUrl)
+            break
+          } catch (connectError) {
+            if (cancelled || attempt === CONNECT_ATTEMPTS) {
+              throw connectError
+            }
+            await new Promise(resolve => setTimeout(resolve, 3_000))
+          }
+        }
 
         if (cancelled) {
           return

@@ -840,7 +840,11 @@ def dispatch(req: dict, transport: Optional[Transport] = None) -> dict | None:
         reset_transport(token)
 
 
-def _wait_agent(session: dict, rid: str, timeout: float = 30.0) -> dict | None:
+# 120s (was 30s): the FIRST agent build lazy-installs provider SDKs
+# (anthropic, edge-tts, ...) and probes model metadata — on a slow network that
+# one-time cost regularly blew the 30s window and surfaced to the user as
+# "agent initialization timed out" on their first message.
+def _wait_agent(session: dict, rid: str, timeout: float = 120.0) -> dict | None:
     ready = session.get("agent_ready")
     if ready is not None and not ready.wait(timeout=timeout):
         return _err(rid, 5032, "agent initialization timed out")
