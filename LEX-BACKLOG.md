@@ -79,3 +79,28 @@ negociação, "caso do dia". Turnos no chat + painel de estado. Treino + marketi
 - Contrato de prestação de serviços com o FFV (escopo estreito + IP pré-existente da Lex).
 - Registro INPI (programa de computador + marca; checar conflito "Lex"/LexisNexis).
 - Modelo founding sponsor / panteão (FFV = fundador, não exclusivo).
+
+---
+
+## 🥊 Posicionamento competitivo (vs Gemini / NotebookLM)
+Muito advogado já usa **Gemini / NotebookLM** pra transcrever e resumir → a demanda está
+**validada** (não precisa educar o mercado sobre *se* serve). Mas essas são ferramentas de
+consumidor, genéricas e **na nuvem**.
+
+**A brecha (e a venda) = sigilo + LGPD.** Jogar áudio/petição do cliente no Gemini/NotebookLM
+manda o dado pros servidores do Google → risco de quebra de **sigilo profissional (art. 7º EOAB)**
+e tratamento indevido de dado pessoal/sensível (LGPD). A maioria faz sem perceber o risco.
+Pitch do Lex: *"a mesma transcrição/análise, mas o dado do cliente nunca sai do escritório"* (whisper local).
+
+| | Gemini / NotebookLM | Lex |
+|---|---|---|
+| Dado do cliente | Nuvem (Google) | **Local / fica no escritório** |
+| Foco | Genérico | **Jurídico** (prazos, jurisprudência, adversário) |
+| Natureza | Passivo (você pergunta) | **Agente** (monitora, redige, alerta, transcreve→extrai→aciona) |
+| Marca | Google | **Do escritório** (white-label) |
+
+Aprender com o NotebookLM: **Q&A ancorado com citação da fonte** (anti-alucinação — essencial
+no Direito) e **audio overview** (→ "resumo falado do processo pro cliente"). O Lex não compete
+como "mais um chat de IA" — compete sendo **local, jurídico, agêntico e do escritório**;
+transcrição é a porta de entrada, o valor é o que vem depois (extrair, cruzar com o caso,
+alertar prazo, atacar a tese).
