@@ -28,17 +28,34 @@ Para cada ataque → **"defesa sugerida"** (como blindar). Destruir E ensinar a 
 
 Infra reaproveitada: delegation/subagentes, profiles (personas), padrão simulador (turnos). Sem código pesado novo no v0.
 
-### 2. Monitor de publicações (dor real do FFV)
+### 2. Geração de peças em lote — "o caso de 50" (dor real do FFV)
+Dor catalogada: pegar N processos (ex.: 50), buscar a info de cada um e gerar N petições.
+Dividir em duas partes com viabilidades **muito diferentes**:
+
+- **🟢 Parte fácil (FAZÍVEL JÁ) — gerar as N peças** (`lex-minuta-lote`):
+  insumo = 1 modelo + 1 planilha/CSV com os dados dos casos → N peças preenchidas pra revisão.
+  Os casos do FFV **variam entre A e B**, então o build faz híbrido:
+  - **A** (mesmo modelo, só troca dados) → **merge determinístico** (sem IA, zero alucinação, sempre certo).
+  - **B** (texto adapta ao caso) → **subagentes em batch** (`delegate_task` modo `tasks[]`): N filhos em paralelo, modelo barato, o pai consolida.
+  - Sempre com **revisão humana**; depois, Lex Adversário pré-checando cada peça. Sem código pesado novo.
+- **🔴 Parte difícil (FASE 2) — coletar a info dos N processos no PJe**:
+  PJe é o gargalo (certificado digital, sem API uniforme, CAPTCHA/anti-robô, ToS, scraping frágil).
+  Caminhos, do melhor pro pior: (1) API do **sistema de gestão** que o FFV já usa (Astrea/Projuris…),
+  (2) **API pública CNJ/DataJud** (só metadados), (3) automação de navegador (toolset `browser`, último recurso).
+
+Demo/ROI: "o que levava 2 dias de estagiário vira minutos". Validar fonte dos dados com o FFV.
+
+### 3. Monitor de publicações (dor real do FFV)
 Skill modelada como automation template: `cron` verifica a fonte de publicações N×/dia →
 classifica/casa com a carteira → calcula prazo → entrega no WhatsApp/e-mail do responsável.
 Depende de mapear o fluxo de publicações do FFV (fonte/volume/triagem). Motor já existe (toolset `cronjob` + `messaging`).
 
-### 3. Lex Simulador (treino gamificado)
+### 4. Lex Simulador (treino gamificado)
 Padrão "Claude Plays Pokémon" aplicado ao Direito: simulador de audiência/júri, treinador OAB,
 negociação, "caso do dia". Turnos no chat + painel de estado. Treino + marketing viral.
 (O Lex Adversário é a primeira encarnação desse padrão.)
 
-### 4. Outras skills jurídicas (depois das primeiras)
+### 5. Outras skills jurídicas (depois das primeiras)
 - `calculo-prazos` (CPC/CLT + feriados forenses)
 - `minuta-pecas` (modelos do escritório)
 - `pesquisa-jurisprudencia` (web/browser + citação verificável)
