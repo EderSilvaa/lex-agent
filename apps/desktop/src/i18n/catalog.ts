@@ -2,6 +2,7 @@ import { BRAND } from '@/branding'
 
 import { en } from './en'
 import { ja } from './ja'
+import { ptBr } from './pt-br'
 import type { Locale, Translations } from './types'
 import { zh } from './zh'
 import { zhHant } from './zh-hant'
@@ -47,5 +48,6 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
   en: deepBrand(en),
   zh: deepBrand(zh),
   'zh-hant': deepBrand(zhHant),
-  ja: deepBrand(ja)
+  ja: deepBrand(ja),
+  'pt-br': deepBrand(ptBr)
 }

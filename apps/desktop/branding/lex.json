@@ -5,6 +5,7 @@
   "appId": "com.lex.app",
   "executableName": "Lex",
   "tagline": "Seu assistente jurídico inteligente.",
+  "wordmark": "Lex Agent",
   "urls": {
     "website": "https://CHANGEME.example.com",
     "support": "https://CHANGEME.example.com/suporte",
@@ -13,8 +14,9 @@
     "portal": "https://CHANGEME.example.com/portal"
   },
   "theme": {
-    "accent": "#1f6feb",
-    "accentDark": "#388bfd"
+    "accent": "#000000",
+    "accentDark": "#ffffff",
+    "registerAsTheme": true
   },
   "assets": {
     "iconIco": "assets/icon.ico",

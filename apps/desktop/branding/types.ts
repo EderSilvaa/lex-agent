@@ -34,6 +34,14 @@ export interface BrandTheme {
   accent: string
   /** Optional dark-mode accent override; falls back to `accent`. */
   accentDark?: string
+  /**
+   * White-label color hook (additive — never touches the user's theme picker).
+   * When true, a "brand" theme built from `accent`/`accentDark` is added to the
+   * Appearance theme list AND pre-selected by default. The existing themes stay
+   * available; the user can still switch and toggle light/dark freely. When
+   * false/omitted, no brand theme is added and the app behaves stock.
+   */
+  registerAsTheme?: boolean
 }
 
 export interface BrandAssets {
@@ -64,6 +72,11 @@ export interface Brand {
   executableName: string
   /** One-line tagline for onboarding / About. */
   tagline: string
+  /**
+   * Hero wordmark shown big on the chat intro screen. Rendered as-is (mixed
+   * case allowed). If omitted, falls back to "<productName> Agent".
+   */
+  wordmark?: string
   urls: BrandUrls
   theme: BrandTheme
   assets: BrandAssets

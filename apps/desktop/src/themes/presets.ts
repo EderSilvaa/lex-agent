@@ -3,6 +3,8 @@
  * Add new themes here — no code changes needed elsewhere.
  */
 
+import { BRAND } from '@/branding'
+
 import type { DesktopTheme, DesktopThemeTypography } from './types'
 
 // Color-emoji fonts to append to every stack as a last resort. None of the UI
@@ -278,7 +280,34 @@ export const slateTheme: DesktopTheme = {
   }
 }
 
+/**
+ * White-label brand theme (approach A — additive). When the active brand sets
+ * `theme.registerAsTheme`, we derive a full theme from its accent colors by
+ * cloning proven neutral palettes (nous light / mono dark) and swapping only
+ * the accent-bearing slots. It joins the Appearance list as a normal theme and
+ * becomes the default — the other themes stay, and the user can switch freely.
+ * Backgrounds come from the neutral bases, so any office accent stays legible.
+ */
+function makeBrandTheme(): DesktopTheme | null {
+  if (!BRAND.theme?.registerAsTheme) {
+    return null
+  }
+  const accent = BRAND.theme.accent
+  const accentDark = BRAND.theme.accentDark || accent
+  return {
+    name: 'brand',
+    label: BRAND.productName,
+    description: `Tema ${BRAND.productName}`,
+    colors: { ...nousTheme.colors, primary: accent, ring: accent, midground: accent, composerRing: accent },
+    darkColors: { ...monoTheme.colors, primary: accentDark, ring: accentDark, midground: accentDark, composerRing: accentDark },
+    typography: DEFAULT_TYPOGRAPHY
+  }
+}
+
+const brandTheme = makeBrandTheme()
+
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
+  ...(brandTheme ? { [brandTheme.name]: brandTheme } : {}),
   nous: nousTheme,
   midnight: midnightTheme,
   ember: emberTheme,
@@ -290,4 +319,4 @@ export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
 export const BUILTIN_THEME_LIST = Object.values(BUILTIN_THEMES)
 
 /** Skin used when nothing is persisted or the persisted name is retired. */
-export const DEFAULT_SKIN_NAME = 'nous'
+export const DEFAULT_SKIN_NAME = brandTheme ? brandTheme.name : 'nous'
