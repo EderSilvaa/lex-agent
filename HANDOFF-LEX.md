@@ -1,9 +1,9 @@
 # Lex (fork do Hermes Agent) — Handoff para continuar em casa
 
 > Estado do trabalho de white-label + por que o app trava no boot e como resolver.
-> Leia isto primeiro ao retomar (você ou outra IA). Data: 2026-06-09.
+> Leia isto primeiro ao retomar (você ou outra IA). Data: 2026-06-09 (atualizado 2026-06-15).
 
-## TL;DR (atualizado 2026-06-10)
+## TL;DR (atualizado 2026-06-15)
 - Fork do monorepo `NousResearch/hermes-agent` rebrandeado para **Lex** (white-label build-por-cliente).
 - **O app ABRIU completo** (chat UI) em 2026-06-10 após a cadeia de fixes abaixo. ✅
 - **Fixes de resiliência aplicados no código** (todos commitados):
@@ -15,6 +15,13 @@
   6. **Para provider anthropic, `base_url` deve ficar COMENTADO** no `config.yaml` — o SDK nativo já usa `https://api.anthropic.com` e acrescenta `/v1` sozinho. Com `base_url: .../v1` a URL final vira `/v1/v1/messages` → **HTTP 404 "Not found" em toda chamada** (auth passa, request_id válido — só o path errado).
 - **STATUS 2026-06-10: ciclo completo FUNCIONANDO** — app abre, gateway conecta (com retry), agente responde via Anthropic no chat. ✅
 - Diagnóstico isolado do WS: `node ws-test.mjs` (na raiz) contra um backend com `HERMES_DASHBOARD_SESSION_TOKEN` conhecido.
+
+### Progresso depois de 2026-06-10 (commitado)
+- **Identidade visual da Lex pronta** ✅ — logo (`apps/desktop/public/lex-logo.svg`), ícone do app (`apps/desktop/assets/lex/icon.{png,ico}` via `make-icon.cjs`), tema de marca aditivo (`src/themes/presets.ts` → `makeBrandTheme`, registrado como default sem sumir com os outros), wordmark "Lex Agent" (`src/components/chat/intro.tsx`). **A linha "assets ainda apontam pra nous-girl" mais abaixo está obsoleta.**
+- **Tradução pt-BR completa** ✅ — `src/i18n/pt-br.ts` (locale inteiro) registrado em `i18n/{types.ts, languages.ts, catalog.ts}`.
+- **Curadoria de skills (1ª passada)** ✅ — removidas as não-jurídicas/arriscadas: **godmode** (jailbreak), **web-pentest**, **pokemon-player**, **minecraft-modpack-server**. Skills são descobertas dinamicamente (`rglob("SKILL.md")`) → remover pasta é seguro.
+- **Inspeção de infra** (read-only, sem editar código) — mapeados: subagentes (`delegate_task` single/batch, contexto isolado, filhos não delegam/escrevem memória), sistema de **memória** (local `MEMORY.md`/`USER.md` em HERMES_HOME + 8 providers externos plugáveis, quase todos nuvem → manter local), **autoaprendizado** (`agent/background_review.py`: fork pós-turno escreve memória/skills sozinho) e skill **`obsidian`** (vault de `.md` no FS + wikilinks). Detalhes e implicações de produto no `LEX-BACKLOG.md`.
+- **Obsidian configurado nesta máquina** — `OBSIDIAN_VAULT_PATH` no `.env` apontando pra `Documents\Lex Vault`. *(Config local — recriar em casa, ver §"O que vive fora do git".)*
 
 ---
 
@@ -35,7 +42,7 @@ Arquivos editados (rebrand): `package.json` (name/productName/scripts), `electro
 ## Pendências de marca (tasks abertas)
 - **#7** Rebrandar ~40 mensagens de boot/erro visíveis no `main.cjs` ("Starting Hermes backend") — ainda dizem "Hermes" (não passam pelo i18n).
 - **#8** Decidir destino do provedor "Nous Portal" (`src/app/settings/constants.ts` + onboarding) — integração real, não só marca.
-- **Assets visuais**: trocar `apps/desktop/public/hermes-*` (sprite/frames/png) e `apps/desktop/assets/icon.*` + `branding/lex.json:assets.logo` (hoje aponta pra `nous-girl.jpg`).
+- **Assets visuais**: ✅ logo/ícone/tema/wordmark da Lex já feitos (ver TL;DR). Resta só trocar sprites de animação residuais `apps/desktop/public/hermes-*` (frames) se for usar a animação da logo.
 - **URLs CHANGEME** em `branding/lex.json` (principalmente `urls.bootstrapRepoRaw` → SEU fork do cérebro).
 
 ---
@@ -91,6 +98,14 @@ Arquivos editados (rebrand): `package.json` (name/productName/scripts), `electro
    - escrever `electron.exe` em `node_modules/electron/path.txt`
 6. **Config/API:** o `.env` (em `HERMES_HOME`) precisa de `ANTHROPIC_API_KEY=...` (provedor escolhido: Anthropic). Modelo: deixar o agente escolher o default ou setar em `config.yaml`.
 7. Rodar: `cd apps/desktop && npm run build` (compila); para abrir, ver modo remoto acima OU `npm run dev` (renderer ao vivo).
+
+## O que vive FORA do git (recriar/copiar em casa)
+O `git pull` traz **só o código**. Estes itens NÃO estão no repo e precisam ser recriados em casa:
+- **`HERMES_HOME\.env`** (`%LOCALAPPDATA%\hermes\.env`) — precisa de `ANTHROPIC_API_KEY=...` e, se for usar Obsidian, `OBSIDIAN_VAULT_PATH=...`. **Tenha a API key à mão.**
+- **`HERMES_HOME\config.yaml`** — `model.default: claude-opus-4-8`, provider anthropic, `base_url` COMENTADO (ver TL;DR §5/§6). Não usar `auth.json` (OAuth Claude é rejeitado — usar api_key do `.env`).
+- **Vault do Obsidian** (`Documents\Lex Vault`) — recriar a pasta (ou copiar).
+- **Dependências** (`node_modules`, `venv`, binário do Electron) — reinstalar (passos 3–5 acima, **com os pins**).
+- **Memória do Claude** (contexto desta conversa: quem é você, estratégia, IP) — vive em `C:\Users\<user>\.claude\projects\<hash>\memory\`, é **local e sensível**. NÃO commitar no GitHub. Levar por **pendrive/canal privado** se quiser no Claude de casa. O estado técnico+produto já viaja pelo git via este HANDOFF + `LEX-BACKLOG.md`.
 
 ## Gotchas observados nesta máquina
 - **Rede MUITO lenta** pra npm/PyPI/GitHub aqui (npm install levou ~1h). Em casa deve ser rápido.
