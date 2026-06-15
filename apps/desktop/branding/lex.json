@@ -19,9 +19,9 @@
     "registerAsTheme": true
   },
   "assets": {
-    "iconIco": "assets/icon.ico",
-    "iconIcns": "assets/icon.icns",
-    "iconPng": "assets/icon.png",
+    "iconIco": "assets/lex/icon.ico",
+    "iconIcns": "assets/lex/icon.png",
+    "iconPng": "assets/lex/icon.png",
     "logo": "lex-logo.svg"
   }
 }
