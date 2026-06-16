@@ -23,6 +23,7 @@
     "iconIcns": "assets/lex/icon.png",
     "iconPng": "assets/lex/icon.png",
     "logo": "lex-logo.svg",
-    "animatedBootMark": true
+    "animatedBootMark": true,
+    "backdrop": "ds-assets/filler-bg0.jpg"
   }
 }

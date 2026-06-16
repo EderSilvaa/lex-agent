@@ -65,6 +65,14 @@ export interface BrandAssets {
    * Falls back to a static badge when false/omitted or reduced-motion is on.
    */
   animatedBootMark?: boolean
+  /**
+   * Optional faint decorative image behind the chat (the `Backdrop`). Path is
+   * relative to the Vite public/ dir. Rendered very subtly (low opacity / blend)
+   * so it never competes with content. When omitted, no backdrop image shows.
+   * Swap per brand (e.g. an office's own subtle motif) by changing this path
+   * and dropping the file in public/.
+   */
+  backdrop?: string
 }
 
 export interface Brand {

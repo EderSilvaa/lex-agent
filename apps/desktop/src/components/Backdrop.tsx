@@ -1,6 +1,8 @@
 import { Leva, useControls } from 'leva'
 import { type CSSProperties, useEffect, useState } from 'react'
 
+import { BRAND } from '@/branding'
+
 const BLEND_MODES = [
   'normal',
   'multiply',
@@ -67,7 +69,7 @@ export function Backdrop() {
   const statue = useControls(
     'Backdrop / Statue',
     {
-      enabled: { value: true, label: 'on' },
+      enabled: { value: Boolean(BRAND.assets.backdrop), label: 'on' },
       opacity: { value: 0.025, min: 0, max: 1, step: 0.005 },
       blendMode: { value: 'difference' as BlendMode, options: BLEND_MODES, label: 'blend' },
       invert: { value: true, label: 'invert color' },
@@ -87,7 +89,7 @@ export function Backdrop() {
     <>
       <Leva collapsed hidden={!import.meta.env.DEV || !controlsOpen} titleBar={{ title: 'backdrop', drag: true }} />
 
-      {statue.enabled && (
+      {statue.enabled && BRAND.assets.backdrop && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-2"
@@ -100,7 +102,7 @@ export function Backdrop() {
             alt=""
             className="w-auto min-w-dvw object-cover"
             fetchPriority="low"
-            src={assetPath('ds-assets/filler-bg0.jpg')}
+            src={assetPath(BRAND.assets.backdrop ?? '')}
             style={{
               height: `${statue.scale}dvh`,
               objectPosition: statue.objectPosition,
