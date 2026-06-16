@@ -22,6 +22,7 @@
     "iconIco": "assets/lex/icon.ico",
     "iconIcns": "assets/lex/icon.png",
     "iconPng": "assets/lex/icon.png",
-    "logo": "lex-logo.svg"
+    "logo": "lex-logo.svg",
+    "animatedBootMark": true
   }
 }

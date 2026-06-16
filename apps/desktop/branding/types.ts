@@ -57,6 +57,14 @@ export interface BrandAssets {
    * REPLACE THIS per brand — it is the most visible logo in the UI.
    */
   logo: string
+  /**
+   * Opt-in: animate the brand mark on the gateway-connecting / boot screen with
+   * the Lex "plumb-line pendulum" motion (the triangle logo swinging with a
+   * trailing afterimage). The geometry is Lex-specific, so other white-label
+   * brands should leave this off and get their static `logo` instead.
+   * Falls back to a static badge when false/omitted or reduced-motion is on.
+   */
+  animatedBootMark?: boolean
 }
 
 export interface Brand {

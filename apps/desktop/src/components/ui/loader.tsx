@@ -1,5 +1,7 @@
 import { type ComponentProps, useEffect, useRef } from 'react'
 
+import { BRAND } from '@/branding'
+import { LexMark } from '@/components/lex-mark'
 import { cn } from '@/lib/utils'
 
 export const LOADER_TYPES = [
@@ -315,7 +317,33 @@ const LOADER_CURVES: Record<LoaderType, LoaderCurve> = {
   }
 }
 
-export function Loader({
+// Public Loader. When the active brand opts into the animated boot mark, every
+// loader in the app becomes the Lex pendulum (one place → all spirals swap).
+// Otherwise it renders the original particle-curve spinner.
+export function Loader(props: LoaderProps) {
+  if (BRAND.assets.animatedBootMark) {
+    return <BrandLoader {...props} />
+  }
+
+  return <ParticleLoader {...props} />
+}
+
+function BrandLoader(props: LoaderProps) {
+  const { className, label = 'Loading', role = 'status' } = props
+
+  return (
+    <div
+      aria-hidden={props['aria-hidden']}
+      aria-label={props['aria-label'] ?? label}
+      className={cn('inline-grid size-10 place-items-center', className)}
+      role={role}
+    >
+      <LexMark className="size-full" />
+    </div>
+  )
+}
+
+function ParticleLoader({
   className,
   label = 'Loading',
   pathSteps = 240,
