@@ -78,7 +78,7 @@ negociação, "caso do dia". Turnos no chat + painel de estado. Treino + marketi
 - **Ícone do app** — já gerado (assets/lex/icon.ico/png via make-icon.cjs). ✔
 - **Logo in-app** — SVG da Lex no brand mark. ✔
 - Renomear/traduzir o tema **"Nous"** no Appearance + descrições de tema (presets.ts).
-- Animação da logo (`LexMark` com stroke-draw/fade) — polimento.
+- **Animação da logo** — ✔ feito. `LexMark` (pêndulo do fio de prumo + rastro/afterimage, CSS, respeita reduced-motion) substitui a espiral do `Loader` em todo o app via flag white-label `assets.animatedBootMark`.
 - Cópia jurídica — reescrever frases de "repo/código/commits" para o contexto jurídico.
 
 ---
