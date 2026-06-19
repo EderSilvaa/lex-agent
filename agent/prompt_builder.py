@@ -1436,6 +1436,13 @@ def load_soul_md() -> Optional[str]:
         content = soul_path.read_text(encoding="utf-8").strip()
         if not content:
             return None
+        # A freshly-seeded SOUL.md is just a heading + HTML-comment instructions
+        # with no real persona text. Treat that placeholder as empty so it never
+        # pollutes the prompt as an overlay on top of the Lex legal floor.
+        import re as _re
+        _body = _re.sub(r"<!--.*?-->", "", content, flags=_re.DOTALL)
+        if not [ln for ln in _body.splitlines() if ln.strip() and not ln.strip().startswith("#")]:
+            return None
         content = _scan_context_content(content, "SOUL.md")
         content = _truncate_content(content, "SOUL.md")
         return content

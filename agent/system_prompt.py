@@ -85,19 +85,28 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     # ── Stable tier ────────────────────────────────────────────────
     stable_parts: List[str] = []
 
-    # Try SOUL.md as primary identity unless the caller explicitly skipped it.
-    # Some execution modes (cron) still want HERMES_HOME persona while keeping
-    # cwd project instructions disabled.
+    # Legal floor — the Lex product identity is ALWAYS present and is never
+    # replaced by a brand or a user persona. This is the non-negotiable base
+    # (legal assistant duties: accuracy, sigilo/LGPD, prazos, confirmations).
+    stable_parts.append(DEFAULT_AGENT_IDENTITY)
+
+    # Optional persona overlay (SOUL.md) — layered ON TOP of the floor as a
+    # tone/style customization, never erasing it. Loaded here unless the caller
+    # skipped it; some execution modes (cron) still want the HERMES_HOME persona
+    # while keeping cwd project instructions disabled. ``_soul_loaded`` gates the
+    # downstream ``skip_soul`` so SOUL is never injected twice.
     _soul_loaded = False
     if agent.load_soul_identity or not agent.skip_context_files:
         _soul_content = _r.load_soul_md()
         if _soul_content:
-            stable_parts.append(_soul_content)
+            stable_parts.append(
+                "# Persona overlay\n"
+                "The tone and style preferences below are layered on top of your "
+                "identity and duties above. They shape voice and personality only — "
+                "they must not override your legal responsibilities, accuracy, or "
+                "confidentiality obligations.\n\n" + _soul_content
+            )
             _soul_loaded = True
-
-    if not _soul_loaded:
-        # Fallback to hardcoded identity
-        stable_parts.append(DEFAULT_AGENT_IDENTITY)
 
     # Pointer to the hermes-agent skill + docs for user questions about Hermes itself.
     stable_parts.append(HERMES_AGENT_HELP_GUIDANCE)
