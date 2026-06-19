@@ -475,8 +475,9 @@ class TestBuildNousSubscriptionPrompt:
 
         prompt = build_nous_subscription_prompt({"image_generate"})
 
-        assert "suggest Nous subscription as one option" in prompt
-        assert "Do not mention subscription unless" in prompt
+        # Lex (legal software) always omits the Nous commercial subscription block
+        # from the agent's system prompt, regardless of Nous feature state.
+        assert prompt == ""
 
     def test_feature_flag_off_returns_empty_prompt(self, monkeypatch):
         monkeypatch.setattr("tools.tool_backend_helpers.managed_nous_tools_enabled", lambda: False)

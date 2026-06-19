@@ -1109,9 +1109,9 @@ def run_doctor(args):
         if should_fix:
             soul_path.parent.mkdir(parents=True, exist_ok=True)
             soul_path.write_text(
-                "# Hermes Agent Persona\n\n"
-                "<!-- Edit this file to customize how Hermes communicates. -->\n\n"
-                "You are Hermes, a helpful AI assistant.\n",
+                "# Lex Persona\n\n"
+                "<!-- Optional: edit this file to add your own tone on top of Lex's\n"
+                "     built-in legal assistant identity. Leave it empty to use the default. -->\n",
                 encoding="utf-8",
             )
             check_ok(f"Created {_DHH}/SOUL.md with basic template")
