@@ -1065,7 +1065,9 @@ class TestBuildSystemPrompt:
             prompt = agent._build_system_prompt()
 
         assert "SOUL IDENTITY" in prompt
-        assert DEFAULT_AGENT_IDENTITY not in prompt
+        # Additive model: SOUL layers ON TOP of the legal floor, which is always
+        # present (default brand name "Lex" → equals DEFAULT_AGENT_IDENTITY).
+        assert DEFAULT_AGENT_IDENTITY in prompt
 
     def test_includes_system_message(self, agent):
         prompt = agent._build_system_prompt(system_message="Custom instruction")

@@ -85,12 +85,24 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     # ── Stable tier ────────────────────────────────────────────────
     stable_parts: List[str] = []
 
-    # Legal floor — the Lex product identity is ALWAYS present and is never
-    # replaced by a brand or a user persona. This is the non-negotiable base
-    # (legal assistant duties: accuracy, sigilo/LGPD, prazos, confirmations).
-    stable_parts.append(DEFAULT_AGENT_IDENTITY)
+    # Layer 1 — legal floor. ALWAYS present, never replaced by a brand or user
+    # persona. The non-negotiable base (legal duties: accuracy, sigilo/LGPD,
+    # prazos, confirmations). Carries the active white-label brand name
+    # (default "Lex"; in a white-label build, the office's brand).
+    stable_parts.append(_r.build_agent_identity())
 
-    # Optional persona overlay (SOUL.md) — layered ON TOP of the floor as a
+    # Layer 2 — optional office/firm white-label context (practice areas, house
+    # style, office facts). Layered ON TOP of the floor; adds, never overrides.
+    _office_context = _r.get_office_context()
+    if _office_context:
+        stable_parts.append(
+            "# Office context\n"
+            "The following describes the law office this assistant serves. Use it to "
+            "tailor your work; it adds to — and never overrides — your duties above.\n\n"
+            + _office_context
+        )
+
+    # Layer 4 — optional persona overlay (SOUL.md) — layered ON TOP of the floor as a
     # tone/style customization, never erasing it. Loaded here unless the caller
     # skipped it; some execution modes (cron) still want the HERMES_HOME persona
     # while keeping cwd project instructions disabled. ``_soul_loaded`` gates the

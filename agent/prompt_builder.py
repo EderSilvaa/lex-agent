@@ -121,12 +121,14 @@ def _strip_yaml_frontmatter(content: str) -> str:
 
 # Lex legal floor — the product's non-negotiable identity, always present in the
 # system prompt (stable tier) regardless of brand or user SOUL.md. Lex IS legal
-# software, so the legal implications below ship baked in. The displayed product
-# name ("Lex") is the engine default; per-office white-label naming and house
-# context layer ON TOP of this (see the office/branding hook), and a user's
-# SOUL.md adds tone ON TOP — neither erases this floor.
-DEFAULT_AGENT_IDENTITY = (
-    "You are Lex, an AI legal assistant built for the practice of Brazilian law. "
+# software, so the legal implications below ship baked in. ``{product_name}`` is the
+# white-label brand name (default "Lex"): in white-label, Lex is the invisible
+# engine and the office's brand is the displayed name. Per-office house context
+# layers ON TOP via the office hook, and a user's SOUL.md adds tone ON TOP —
+# neither erases this floor. Prefer build_agent_identity(); the template itself
+# has an unfilled placeholder and must not be injected raw.
+_LEGAL_FLOOR_TEMPLATE = (
+    "You are {product_name}, an AI legal assistant built for the practice of Brazilian law. "
     "You support qualified lawyers: you augment their work, you do not replace their "
     "judgment, and final responsibility for any legal act always remains the lawyer's. "
     "Communicate in Brazilian Portuguese (pt-BR) by default, in clear, precise, "
@@ -144,6 +146,48 @@ DEFAULT_AGENT_IDENTITY = (
     "petition, sending a message, deleting work). "
     "Be targeted and efficient, and prioritize being genuinely useful."
 )
+
+# Fully-formed default ("Lex") — the canonical identity string used as a fallback
+# by adapters (codex) and asserted by tests. White-label builds resolve the brand
+# name at prompt-build time via build_agent_identity().
+DEFAULT_AGENT_IDENTITY = _LEGAL_FLOOR_TEMPLATE.format(product_name="Lex")
+
+
+def get_brand_product_name() -> str:
+    """White-label brand name for the agent identity (layer 2 — name).
+
+    Reads ``branding.product_name`` from config; falls back to "Lex". In a
+    white-label build this is the office's brand; Lex stays the invisible engine.
+    """
+    try:
+        from hermes_cli.config import cfg_get, load_config_readonly
+        name = cfg_get(load_config_readonly(), "branding", "product_name", default="")
+        if isinstance(name, str) and name.strip():
+            return name.strip()
+    except Exception as e:
+        logger.debug("Could not read branding.product_name: %s", e)
+    return "Lex"
+
+
+def build_agent_identity(product_name: "str | None" = None) -> str:
+    """Legal-floor identity with the active white-label brand name (default "Lex")."""
+    name = product_name if (isinstance(product_name, str) and product_name.strip()) else get_brand_product_name()
+    return _LEGAL_FLOOR_TEMPLATE.format(product_name=name)
+
+
+def get_office_context() -> str:
+    """White-label layer 2 — optional law-office house context (practice areas,
+    house style, office facts). Reads ``branding.office_context`` from config;
+    empty when unset. Added ON TOP of the legal floor, never replacing it.
+    """
+    try:
+        from hermes_cli.config import cfg_get, load_config_readonly
+        ctx = cfg_get(load_config_readonly(), "branding", "office_context", default="")
+        if isinstance(ctx, str) and ctx.strip():
+            return ctx.strip()
+    except Exception as e:
+        logger.debug("Could not read branding.office_context: %s", e)
+    return ""
 
 HERMES_AGENT_HELP_GUIDANCE = (
     "When the user needs help with the Lex application itself — configuring, setting "
